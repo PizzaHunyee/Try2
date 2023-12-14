@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friends Room</title> <!-- Updated title -->
+</head>
+<body>
+    <!-- Username input and set button -->
+    <input type="text" id="username-input" placeholder="Enter your username">
+    <button onclick="setUsername()">Set Username</button>
+
+    <!-- Chat box for displaying messages -->
+    <div id="chat-box"></div>
+    
+    <!-- Form for sending messages -->
+    <form onsubmit="sendMessage(); return false;">
+        <input type="text" id="message-input" placeholder="Type your message">
+        <button type="submit">Send</button>
+    </form>
+
+    <!-- JavaScript code -->
+    <script>
+        // Function to set the username
+        function setUsername() {
+            var usernameInput = document.getElementById("username-input");
+            var username = usernameInput.value;
+
+            // Save the username to local storage
+            localStorage.setItem("chatUsername", username);
+        }
+
+        // Function to get the username
+        function getUsername() {
+            return localStorage.getItem("chatUsername") || "Guest";
+        }
+
+        // Function to send a message
+        function sendMessage() {
+            var messageInput = document.getElementById("message-input");
+            var chatBox = document.getElementById("chat-box");
+
+            // Get the message value and username
+            var message = messageInput.value;
+            var username = getUsername();
+
+            // Display the message in the chat box with the username
+            chatBox.innerHTML += "<p><strong>" + username + ":</strong> " + message + "</p>";
+
+            // Save message to local storage
+            var messages = localStorage.getItem("chatMessages") || "[]";
+            messages = JSON.parse(messages);
+            messages.push({ sender: username, message: message });
+            localStorage.setItem("chatMessages", JSON.stringify(messages));
+
+            // Clear the message input
+            messageInput.value = "";
+        }
+
+        // Function to load messages from local storage
+        function loadMessages() {
+            var chatBox = document.getElementById("chat-box");
+            var messages = localStorage.getItem("chatMessages") || "[]";
+            messages = JSON.parse(messages);
+
+            // Display existing messages
+            messages.forEach(function (msg) {
+                chatBox.innerHTML += "<p><strong>" + msg.sender + ":</strong> " + msg.message + "</p>";
+            });
+        }
+
+        // Load messages when the page is loaded
+        window.onload = function () {
+            loadMessages();
+            // Load username when the page is loaded
+            document.getElementById("username-input").value = getUsername();
+        };
+    </script>
+</body>
+</html>
